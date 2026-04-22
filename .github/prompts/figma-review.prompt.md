@@ -1,0 +1,87 @@
+---
+description: Figmaデザインと実装を比較してレビュー・修正する
+tools:
+  - execute/getTerminalOutput
+  - execute/runInTerminal
+  - edit/editFiles
+  - search/codebase
+  - com.figma.mcp/mcp/get_screenshot
+  - com.figma.mcp/mcp/get_design_context
+  - com.figma.mcp/mcp/get_variable_defs
+---
+
+レビューするFigma URLをチャットで指定してください（省略した場合はすでに実装済みのデザインを対象にします）。
+
+> **注意**: ターミナルコマンドを実行する際は **Bash** を使用すること。
+
+## 手順
+
+### 1. Figmaのスクリーンショット取得
+
+- `get_screenshot` で対象ノードのスクリーンショットを取得する
+- `get_design_context` でデザインコンテキストを取得する
+- `get_variable_defs` でデザイン変数を取得する
+- スクリーンショットを参照しながら実装との視覚的差異を特定する
+
+### 2. 視覚的差異の確認と修正
+
+スクリーンショットと実装を比較して以下を確認・修正する：
+
+**レイアウト**
+
+- 要素の配置・整列（flex/grid の方向、justify/align の設定）
+- スペーシング（padding, margin, gap の値）
+- サイズ（幅・高さ）
+
+**スタイル**
+
+- 色（`@theme` トークンまたはTailwindのカラーパレット）
+- タイポグラフィ（フォントサイズ、ウェイト、行間）
+- 角丸（border-radius）、シャドウ（box-shadow）
+- ボーダー（色・太さ・スタイル）
+
+**レスポンシブ**
+
+- モバイル（`sm:`）・タブレット（`md:`）・デスクトップ（`lg:`）での見た目
+
+### 3. TypeScript エラー・警告の解消
+
+下記の `<pm>` はお使いのパッケージマネージャ（`npm`・`yarn`・`pnpm` など）に読み替えてください。
+
+```bash
+<pm> build
+```
+
+を実行してTypeScriptのエラーと警告をすべて解消する。
+
+よくある問題：
+
+- `noUnusedVariables`: 使っていない変数・インポートの削除
+- `noExplicitAny`: `any` 型を具体的な型に置き換える
+- `useExhaustiveDependencies`: `useEffect` 等の依存配列の修正
+
+### 4. アクセシビリティの確認
+
+- キーボードナビゲーションが機能するか
+- `aria-label` 等のARIA属性が適切に設定されているか
+- 色コントラストがWCAG AA基準（4.5:1）を満たしているか
+- 画像に意味のある `alt` テキストがあるか
+
+### 5. コードスタイルの確認
+
+下記の `<pm>` はお使いのパッケージマネージャ（`npm`・`yarn`・`pnpm` など）に読み替えてください。
+
+```bash
+<pm> check
+```
+
+を実行してBiomeのリント・フォーマットエラーを自動修正する。
+
+### 6. レビュー結果の報告
+
+修正完了後、以下をまとめて報告する：
+
+- 視覚的差異として修正した箇所
+- TypeScriptエラー・警告の修正内容
+- アクセシビリティの改善点
+- 残課題があれば明記する
