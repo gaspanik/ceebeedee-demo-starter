@@ -62,15 +62,18 @@ Tailwind CSS v4 なので `tailwind.config.js` は使わない。
 
 ---
 
-## Step 4: スターターコンテンツをクリアする
+## Step 4: 実装前のクリーンアップ
 
-実装に入る前に、スターターのデモコンテンツを必ずクリアする。
+新規モックアップを作成する前に、スターターのボイラープレートをクリアする。
 
-### `src/routes/__root.tsx` をクリーンなレイアウトに書き換える
+### `src/routes/__root.tsx` の確認・整理
 
-スターターには不要なヘッダーナビが含まれているため、`<Outlet />` のみを返すシンプルな構造に書き換える:
+スターターには `<div className="p-2">` などのラッパーが含まれていることがある。これが残っていると、ヒーローセクションの全幅表示などに意図しないマージン・パディングが生じる。
+
+実装前に `__root.tsx` を読み込み、`<Outlet />` の周囲に余分なラッパーや padding があれば除去する:
 
 ```tsx
+// ✅ クリーンな状態
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
@@ -84,9 +87,7 @@ const RootLayout = () => (
 export const Route = createRootRoute({ component: RootLayout })
 ```
 
-### `src/routes/index.tsx` をクリアする
-
-スターターのデモコンテンツを削除し、最小限のプレースホルダーに置き換える（この後すぐ上書きするので内容は何でもよい）。
+ヘッダー・フッターをグローバルに配置する場合はここに追加してよい。ただし `<Outlet />` を直接囲む div に padding/margin を与えないこと。
 
 ---
 
@@ -177,7 +178,12 @@ const card = tv({
 
 - `import React from 'react'` は書かない（react-jsx transform が有効）
 - アイコンは `lucide-react` を使う（`import { IconName } from 'lucide-react'`）
-- 画像は `src/assets/images/` に置いて `getImage()` / `getImageAsync()` で参照
+- 画像は `src/assets/images/` に置いて `getImage()` / `getImageAsync()` で参照（URL を直接埋め込まない。Unsplash 等の外部 URL は期限切れになるため）
+- ユーザーから画像の指定があった場合: curl でローカルにダウンロードしてから参照する
+  ```bash
+  curl -L "https://..." -o src/assets/images/hero.jpg
+  ```
+  ユーザーが画像を指定しない場合はプレースホルダー（背景色 + テキスト）で代替し、画像なしで実装する
 - `space-x-*` / `space-y-*` は Tailwind v4 では非推奨 → `gap-*` with flex/grid を使う
 - レスポンシブ対応必須（`sm:`, `md:`, `lg:` ブレークポイントを活用）
 - アクセシビリティ: `<nav aria-label="...">`, `aria-expanded`, `alt` テキストを必ずつける
@@ -209,7 +215,7 @@ function HomePage() {
 
 ---
 
-## Step 6: 実装後の確認
+## Step 5: 実装後の確認
 
 実装が終わったら:
 
