@@ -62,7 +62,35 @@ Tailwind CSS v4 なので `tailwind.config.js` は使わない。
 
 ---
 
-## Step 4: 実装する
+## Step 4: スターターコンテンツをクリアする
+
+実装に入る前に、スターターのデモコンテンツを必ずクリアする。
+
+### `src/routes/__root.tsx` をクリーンなレイアウトに書き換える
+
+スターターには不要なヘッダーナビが含まれているため、`<Outlet />` のみを返すシンプルな構造に書き換える:
+
+```tsx
+import { createRootRoute, Outlet } from '@tanstack/react-router'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+
+const RootLayout = () => (
+  <>
+    <Outlet />
+    <TanStackRouterDevtools position="bottom-right" />
+  </>
+)
+
+export const Route = createRootRoute({ component: RootLayout })
+```
+
+### `src/routes/index.tsx` をクリアする
+
+スターターのデモコンテンツを削除し、最小限のプレースホルダーに置き換える（この後すぐ上書きするので内容は何でもよい）。
+
+---
+
+## Step 5: 実装する
 
 ### ファイル配置のルール
 
@@ -181,12 +209,12 @@ function HomePage() {
 
 ---
 
-## Step 5: 実装後の確認
+## Step 6: 実装後の確認
 
 実装が終わったら:
 
-1. `pnpm dev` でdev serverを起動してブラウザで確認
-2. `pnpm check` でBiomeの型チェック・フォーマットを実行
+1. `<pm> run dev` でdev serverを起動してブラウザで確認
+2. `<pm> run check` でBiomeの型チェック・フォーマットを実行
 3. レスポンシブ・アクセシビリティに問題がないか確認
 4. ユーザーに完成を報告し、次のページ or 修正要望を聞く
 
