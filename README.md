@@ -22,6 +22,8 @@ ts-swc/
 │   │   └── images/     # 画像ファイル（jpg, png, webp, svg）
 │   ├── components/     # 再利用可能なコンポーネント
 │   │   └── ButtonCn.tsx
+│   │   ├── ButtonCva.tsx    # CVAを使ったバリアントボタン
+│   │   └── CardTv.tsx       # tailwind-variantsを使ったカード
 │   ├── lib/            # ユーティリティ関数
 │   │   ├── image.ts         # 画像アセット管理（eager loading）
 │   │   ├── imageAsync.ts    # 画像アセット管理（lazy loading）
@@ -81,6 +83,43 @@ npm run format
 npm run check
 ```
 
+## 🔤 標準書体：Gen Interface JP
+
+このテンプレートはデフォルトの書体として **[Gen Interface JP](https://github.com/yamatoiizuka/gen-interface-jp)** を使用しています。
+
+### 書体の変更方法
+
+書体を変更する場合は、以下の2ファイルを編集してください。
+
+**1. `index.html` — フォントの読み込み**
+
+```html
+<!-- 現在の設定（Gen Interface JP） -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gen-interface-jp@latest/all.css" />
+
+<!-- ディスプレイ書体を使う場合 -->
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gen-interface-jp@latest/display-all.css" /> -->
+```
+
+**2. `src/index.css` — デフォルトフォントの適用**
+
+```css
+/* Google Fontsを使う場合はファイル冒頭の @import のコメントを外す */
+/* @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap"); */
+@import "tailwindcss";
+
+@theme {
+  /* 現在の設定（Gen Interface JP） */
+  --default-font-family: "Gen Interface JP", sans-serif;
+
+  /* ディスプレイ書体を使う場合 */
+  /* --default-font-family: "Gen Interface JP Display", sans-serif; */
+
+  /* 例：Google Fontsに変更する場合 */
+  /* --default-font-family: "Noto Sans JP", sans-serif; */
+}
+```
+
 ## 🎨 Tailwind CSS v4
 
 このプロジェクトはTailwind CSS v4を使用しています。設定は [@tailwindcss/vite](https://tailwindcss.com/docs/guides/vite) プラグインを通じて行われます。
@@ -104,6 +143,29 @@ TanStack Routerは自動的にルート定義を生成します。`src/routes/`�
 - **パスエイリアス** - `@/` で `src/` にアクセス可能
 - **Biome統合** - ESLint + Prettierより高速なツールチェーン
 
+## 🖼️ モックアップ作成コマンド
+
+Figma URLがない状態でUIを作りたい場合に使用するスキルです。Claude Code上で以下のように話しかけるだけで起動します。
+
+| トリガー例 | 説明 |
+|---|---|
+| `/create-mockup` | スキルを明示的に起動する |
+| 「モックアップを作りたい」 | 自然言語でも自動的にスキルが起動する |
+| 「新しいページを作って」 | 同上 |
+| 「LPを作って」 | 同上 |
+
+### ワークフロー
+
+スキルが起動すると、以下の3点をヒアリングしてから実装します：
+
+1. **サイト・アプリの種類** — ECサイト、ダッシュボード、LP、コーポレートサイトなど
+2. **デザインテイスト** — カラー・雰囲気・参考サイトなど（「おまかせ」でも可）
+3. **ページ種別** — トップページ、一覧ページ、詳細ページなど
+
+プロジェクトの技術スタック（React 19 + TypeScript + Tailwind CSS v4 + TanStack Router）に沿ったコードを自動生成します。
+
+---
+
 ## 🎨 Figma連携コマンド
 
 Claude Code上でFigmaデザインをコードに変換するためのスラッシュコマンドです。
@@ -115,8 +177,11 @@ Claude Code上でFigmaデザインをコードに変換するためのスラッ�
 | `/figma:implement-figma <URL>` | FigmaのURLを指定してデザインを実装する |
 | `/figma:review-figma <URL>` | FigmaのURLを指定して実装とデザインを比較・修正する |
 | `/figma:code-optim` | `src/components/` 内の実装済みコンポーネントをリファクタリングする |
+| `/figma-workflow <URL>` | 実装・レビュー・最適化を一括実行するオールインワンコマンド |
 
 ### 典型的なワークフロー
+
+個別コマンドで実行する場合：
 
 ```bash
 # 1. 最初に一度だけ実行してデモコンテンツをクリア
@@ -130,6 +195,13 @@ Claude Code上でFigmaデザインをコードに変換するためのスラッ�
 
 # 4. コンポーネントのリファクタリング
 /figma:code-optim
+```
+
+`/figma-workflow` を使うと、上記の2〜4を一括実行できます：
+
+```bash
+# setup-env 後、1コマンドで実装・レビュー・最適化を実行
+/figma-workflow https://www.figma.com/design/...
 ```
 
 ## 🔧 カスタマイズ
