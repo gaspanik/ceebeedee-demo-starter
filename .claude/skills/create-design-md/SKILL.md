@@ -46,7 +46,7 @@ allowed-tools: Bash, Read, Write, Edit, Agent, AskUserQuestion, WebFetch, mcp__p
 
 以下のファイルを順番に読み込み、デザインシステムの情報を収集する：
 
-1. `src/index.css` — `@import "tailwindcss"` と `@theme` ブロックからカラー・スペーシングトークンを抽出する
+1. **メイン CSS ファイルを検索** — `grep -rl --include="*.css" --exclude-dir=node_modules --exclude-dir=dist '@import ["'"'"']tailwindcss' . 2>/dev/null` を実行して Tailwind をインポートしている CSS ファイルを特定し、最初のマッチを読み込む（通常 `src/index.css` や `src/app.css`）。`@theme` ブロックからカラー・スペーシングトークンを抽出する
 2. `src/routes/` 配下の `*.tsx` ファイル — 使用されているコンポーネントパターン（ボタン、カードなど）を確認する
 3. `src/components/` 配下の `*.tsx` ファイル — 再利用コンポーネントのスタイルパターンを確認する
 4. `src/main.tsx` — ルーター設定など UI に関わる実装を確認する
