@@ -171,6 +171,17 @@ Figma URLがない状態でUIを作りたい場合に使用するスキルです
 Claude Code上でFigmaデザインをコードに変換するためのスラッシュコマンドです。
 事前にFigma MCPサーバーが接続されている必要があります。
 
+> **Figma MCPが見つからない場合**
+>
+> Figma MCPのインストール方法（プラグイン経由 / 設定ファイルへの直接記述など）によって、Claude Code（`allowed-tools`）または GitHub Copilot（`tools`）が認識するツール名のプレフィックスが異なります。スキルやコマンドを実行したときに「ツールが見つからない」「パーミッションエラーが出る」といった問題が起きた場合は、エージェントに次のように依頼してください：
+>
+> ```
+> Figma MCPのツール名が環境に合っていないようです。
+> スキル（またはコマンド）の allowed-tools を私の環境のツール名に書き換えてください。
+> ```
+>
+> エージェントが現在の MCP ツール一覧を確認し、スキルファイルまたはコマンドファイルを自動的に修正します。
+
 | コマンド | 説明 |
 |---|---|
 | `/figma:setup-env` | スターターのデモコンテンツを削除し、実装を始める前に一度だけ実行する |
@@ -203,6 +214,52 @@ Claude Code上でFigmaデザインをコードに変換するためのスラッ�
 # setup-env 後、1コマンドで実装・レビュー・最適化を実行
 /figma-workflow https://www.figma.com/design/...
 ```
+
+## 🎨 Tailwind ツールコマンド
+
+Tailwind CSS の品質管理・デザイントークン連携に使用するスラッシュコマンドです。Claude Code 上で直接実行できます。
+
+| コマンド | 説明 |
+|---|---|
+| `/tailwind-review` | Tailwind クラスのレビュー・最適化・v3→v4 移行、HTML アクセシビリティチェックを行う |
+| `/tailwind-typescale` | ベースサイズとスケール比率を選んで調和のとれたタイプスケールを `@theme` に設定する |
+| `/figma-to-tailwind <URL>` | Figma ファイルの変数をすべて読み取り、`@theme` トークンとして `src/index.css` に書き出す |
+| `/tailwind-to-figma [URL]` | `src/index.css` の `@theme` トークンを Figma 変数としてエクスポートする |
+
+### コマンド詳細
+
+**`/tailwind-review`** — 5つの観点でコードをレビュー：
+1. クラスの冗長性・競合検出（`*:` バリアントや `cn()` の提案も）
+2. v3 → v4 移行チェック（`space-y-*`、`shadow-sm` スケールシフトなど）
+3. デザイントークンの使用チェック（任意値 `text-[#294779]` → `text-primary` への置き換え提案）
+4. アクセシビリティ（大文字テキスト、コントラスト）
+5. HTML 構造の a11y（`<nav>` の `aria-label`、`<button type>` など）
+
+**`/tailwind-typescale`** — 4種のスケール比率から選択（Perfect Fourth / Major Third / Golden Ratio / Minor Third）し、`--text-xs`〜`--text-9xl` を自動計算して `@theme` と `@layer base` に適用する。
+
+**`/figma-to-tailwind <URL>`** — Figma の COLOR・FLOAT・STRING 変数を型別に CSS カスタムプロパティへ変換し、`--color-*`、`--spacing-*`、`--radius-*`、`--text-*` などとして `@theme` に書き出す。
+
+**`/tailwind-to-figma [URL]`** — `@theme` の CSS カスタムプロパティを逆方向に Figma へエクスポート。URL 省略時は "Design Tokens" という名前で新規ファイルを作成する。
+
+---
+
+## 🤖 GitHub Copilot コマンド
+
+`.github/prompts/` にある同等のコマンドを GitHub Copilot（VS Code）から実行できます。`@workspace /co-xxx` 形式で呼び出してください。
+
+| コマンド | 対応する Claude Code スキル |
+|---|---|
+| `@workspace /co-tailwind-review` | `/tailwind-review` |
+| `@workspace /co-tailwind-typescale` | `/tailwind-typescale` |
+| `@workspace /co-figma-to-tailwind` | `/figma-to-tailwind` |
+| `@workspace /co-tailwind-to-figma` | `/tailwind-to-figma` |
+| `@workspace /co-create-mockup` | `/create-mockup` |
+| `@workspace /co-implement-figma` | `/figma:implement-figma` |
+| `@workspace /co-review-figma` | `/figma:review-figma` |
+| `@workspace /co-setup-env` | `/figma:setup-env` |
+| `@workspace /co-code-optim` | `/figma:code-optim` |
+
+---
 
 ## 🔧 カスタマイズ
 

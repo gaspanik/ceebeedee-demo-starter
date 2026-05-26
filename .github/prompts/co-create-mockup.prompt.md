@@ -1,13 +1,15 @@
 ---
-name: create-mockup
-description: UIモックアップを作成するスキル。ユーザーが「モックアップを作りたい」「新しいページを作って」「UIデザインを実装したい」「サイトの画面を作りたい」「LP/トップページを作って」「デザインを実装して」などと言った場合は必ずこのスキルを使う。サイト種別・デザインテイスト・ページ種別の3つをヒアリングしてから、このプロジェクトのCLAUDE.md仕様に沿って実装する。Figma URLがない状態でUIを作る場合に特に有効。
+description: UIモックアップを作成する。「モックアップを作りたい」「新しいページを作って」「UIデザインを実装したい」「LP/トップページを作って」などの場合に使う
+tools:
+  - search/codebase
+  - edit/editFiles
+  - execute/getTerminalOutput
+  - execute/runInTerminal
 ---
-
-# create-mockup — UIモックアップ作成スキル
 
 ユーザーの要件をヒアリングして、プロジェクトの技術スタック（React 19 + TypeScript + Tailwind CSS v4 + TanStack Router）に沿ったUIモックアップを実装する。
 
----
+> **注意**: ターミナルコマンドを実行する際は `runInTerminal` ツールを使用すること。
 
 ## Step 1: サイト・アプリの種類を確認する
 
@@ -21,7 +23,7 @@ description: UIモックアップを作成するスキル。ユーザーが「�
 
 ## Step 2: デザインテイストを確認する
 
-次にデザインの方向性を確認する。以下の観点でまとめて質問すると効率的:
+次にデザインの方向性を確認する:
 
 > 「デザインのイメージを教えてください:
 > - カラー: ブランドカラーや使いたい色はありますか？（なければ「おまかせ」でも可）
@@ -32,7 +34,7 @@ description: UIモックアップを作成するスキル。ユーザーが「�
 
 ### カラーを決めたら @theme に定義する
 
-ユーザーまたは自分で決めたカラーは `src/index.css` の `@theme` ブロックに追加する。例:
+ユーザーまたは自分で決めたカラーは `src/index.css` の `@theme` ブロックに追加する:
 
 ```css
 @theme {
@@ -49,8 +51,6 @@ Tailwind CSS v4 なので `tailwind.config.js` は使わない。
 
 ## Step 3: ページ種別と優先順位を確認する
 
-どのページを作るか確認する:
-
 > 「どのページを作りますか？複数ある場合は優先順位も教えてください。
 > - トップページ（ヒーロー・特徴・CTA など複数セクション）
 > - 商品一覧 / 詳細ページ
@@ -64,16 +64,9 @@ Tailwind CSS v4 なので `tailwind.config.js` は使わない。
 
 ## Step 4: 実装前のクリーンアップ
 
-新規モックアップを作成する前に、スターターのボイラープレートをクリアする。
-
-### `src/routes/__root.tsx` の確認・整理
-
-スターターには `<div className="p-2">` などのラッパーが含まれていることがある。これが残っていると、ヒーローセクションの全幅表示などに意図しないマージン・パディングが生じる。
-
-実装前に `__root.tsx` を読み込み、`<Outlet />` の周囲に余分なラッパーや padding があれば除去する:
+`src/routes/__root.tsx` を読み込み、`<Outlet />` の周囲に余分なラッパーや padding があれば除去する:
 
 ```tsx
-// ✅ クリーンな状態
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
@@ -105,37 +98,28 @@ export const Route = createRootRoute({ component: RootLayout })
 
 ### ルートファイルの命名規則
 
-TanStack Router のファイルベースルーティング規則に従う:
-
 | URL | ファイルパス |
 |-----|------------|
 | `/` | `src/routes/index.tsx` |
 | `/about` | `src/routes/about.tsx` |
-| `/products` | `src/routes/products/index.tsx` または `src/routes/products.tsx` |
+| `/products` | `src/routes/products/index.tsx` |
 | `/products/:id` | `src/routes/products/$productId.tsx` |
-| `/dashboard` | `src/routes/dashboard.tsx` |
 | `/blog/:slug` | `src/routes/blog/$slug.tsx` |
-
-**既存ファイルの上書きについて**: このスキルは新規モックアップ作成用なので、`index.tsx` を含む既存ファイルへの上書きは問題ない。
 
 ### コンポーネントの分割方針
 
-**できるだけ細かく分割して再利用しやすくする**。ルートファイルはページ全体の骨格だけを持ち、実際の UI は全てコンポーネントに切り出す。
+できるだけ細かく分割して再利用しやすくする。ルートファイルはページ全体の骨格だけを持ち、実際の UI は全てコンポーネントに切り出す。
 
 分割の目安:
 - セクション単位（`HeroSection`, `FeatureSection`, `CtaSection`）
 - 繰り返し要素（`ProductCard`, `KpiCard`, `ArticleCard`）
 - 独立して機能するUI部品（`FilterBar`, `SortDropdown`, `Pagination`）
-- ナビゲーション・ヘッダー・フッター
-
-**悪い例（避ける）**: `products.tsx` 1ファイルに全JSXを書く  
-**良い例**: `products.tsx` が `ProductGrid`, `ProductCard`, `FilterBar` をインポートして組み合わせる
 
 関連コンポーネントが複数あるときはサブディレクトリにまとめる（例: `src/components/dashboard/`）。
 
-### コンポーネントの書き方
+### コンポーネントのスタイリング
 
-プロジェクトには3つのスタイリングアプローチがある。用途に合わせて選ぶ:
+用途に合わせて3つのアプローチを使い分ける:
 
 **シンプルな条件付きスタイル → `cn()` 関数**
 ```tsx
@@ -178,46 +162,21 @@ const card = tv({
 
 - `import React from 'react'` は書かない（react-jsx transform が有効）
 - アイコンは `lucide-react` を使う（`import { IconName } from 'lucide-react'`）
-- 画像は `src/assets/images/` に置いて `getImage()` / `getImageAsync()` で参照（URL を直接埋め込まない。Unsplash 等の外部 URL は期限切れになるため）
-- ユーザーから画像の指定があった場合: curl でローカルにダウンロードしてから参照する
-  ```bash
-  curl -L "https://..." -o src/assets/images/hero.jpg
-  ```
-  ユーザーが画像を指定しない場合はプレースホルダー（背景色 + テキスト）で代替し、画像なしで実装する
+- 画像は `src/assets/images/` に置いて `getImage()` で参照（URL を直接埋め込まない）
+  - ユーザーが画像を指定しない場合はプレースホルダー（背景色 + テキスト）で代替する
+  - 外部URLを指定された場合は curl でローカルにダウンロードしてから参照する:
+    ```bash
+    curl -L "https://..." -o src/assets/images/hero.jpg
+    ```
 - `space-x-*` / `space-y-*` は Tailwind v4 では非推奨 → `gap-*` with flex/grid を使う
 - レスポンシブ対応必須（`sm:`, `md:`, `lg:` ブレークポイントを活用）
 - アクセシビリティ: `<nav aria-label="...">`, `aria-expanded`, `alt` テキストを必ずつける
 - ナビゲーションは TanStack Router の `<Link>` コンポーネントを使う
-
-### ヒーローセクションのサンプル構造（参考）
-
-```tsx
-// src/routes/index.tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { HeroSection } from '@/components/HeroSection'
-import { FeatureSection } from '@/components/FeatureSection'
-import { CtaSection } from '@/components/CtaSection'
-
-export const Route = createFileRoute('/')({
-  component: HomePage,
-})
-
-function HomePage() {
-  return (
-    <main>
-      <HeroSection />
-      <FeatureSection />
-      <CtaSection />
-    </main>
-  )
-}
-```
+- コンポーネントは named export で書く
 
 ---
 
 ## Step 6: 実装後の確認
-
-実装が終わったら以下の順で確認する:
 
 ### 1. クラス重複・命名衝突チェック（必須）
 
@@ -229,6 +188,8 @@ function HomePage() {
 - **意味の競合**: `text-sm` と `text-base` のようにフォントサイズ系クラスが同じ要素に複数ある
 
 ### 2. 型チェック・ビルド確認
+
+下記の `<pm>` はお使いのパッケージマネージャ（`npm`・`yarn`・`pnpm` など）に読み替えてください。
 
 ```bash
 <pm> run check   # Biome リント + フォーマット
@@ -253,34 +214,34 @@ TypeScript エラーや Vite のビルドエラーがないことを確認する
 grep -oE 'localhost:[0-9]+' <出力ファイルパス> | head -1
 ```
 
-### 4. 報告と次の工程選択
+### 4. 報告
 
-ユーザーに完成を報告し、`AskUserQuestion` ツールで次のアクションを選択してもらう:
+ユーザーに完成を報告し、次のアクションを選択してもらう：
 
 ```
 次に何をしますか？
 
 1. Figma にキャプチャとして取り込む
-   → ブラウザのレンダリング結果をそのまま Figma に画像として移植（generate_figma_design）
+   → ブラウザのレンダリング結果をそのまま Figma に画像として移植
 
-2. Figma ノードとして生成する（/figma:figma-use）
+2. Figma ノードとして生成する
    → コンポーネント・変数・オートレイアウトを持つデザインシステムとして作成
 
-3. Tailwind 変数を Figma Variables に移植する（/tailwind-to-figma）
+3. Tailwind 変数を Figma Variables に移植する
    → src/index.css の @theme トークンを Figma の Variables として登録
 
 4. このままで終了
 ```
 
-選択に応じて対応するスキルを呼び出す:
-- **1 を選択** → 以下の手順で `generate_figma_design` MCP ツールを**直接**呼ぶ（スキル経由にしない）:
-  1. Step 6.3 で起動した開発サーバーの URL（例: `http://localhost:5173`）を使用する
+選択に応じて対応するツール・プロンプトを呼び出す：
+- **1 を選択** → 以下の手順で `generate_figma_design` MCP ツールを**直接**呼ぶ：
+  1. 開発サーバーの URL（例: `http://localhost:5173`）を使用する
   2. まず `outputMode` なしで `generate_figma_design` を呼び、取り込み先の選択肢を表示する
-  3. ユーザーが選択したら `outputMode` とURLを指定して再度呼ぶ
+  3. ユーザーが選択したら `outputMode` と URL を指定して再度呼ぶ
   4. 返却された `captureId` を使い、5秒おきに最大10回ポーリングして完了を待つ
-  - **注意**: `/figma:figma-generate-design` スキルは呼ばない。`use_figma` も呼ばない。純粋なキャプチャのみ。
-- **2 を選択** → `/figma:figma-use` スキルを起動
-- **3 を選択** → `/tailwind-to-figma` スキルを起動
+  - **注意**: `use_figma` は呼ばない。純粋なキャプチャのみ。
+- **2 を選択** → `use_figma` MCP ツールを直接呼び出して実行する
+- **3 を選択** → [co-tailwind-to-figma](co-tailwind-to-figma.prompt.md) プロンプトを起動する
 - **4 を選択** → 「お疲れ様でした！」と伝えて終了
 
 ---
